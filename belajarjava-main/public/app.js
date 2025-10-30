@@ -1,4 +1,4 @@
-const from = document.getElementById("loginForm")
+const form = document.getElementById("loginForm")
 const messageBox = document.getElementById("message")
 
 function setMessage(text, type="info"){
@@ -8,11 +8,11 @@ function setMessage(text, type="info"){
 }
 
 form.addEventListener("submit",async(event)=>{
- event.preventDefaut();
+ event.preventDefault();
 
  setMessage("Memproses...",'info')
 
-    const formData = new formData(form)
+    const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries())
 
     try{
