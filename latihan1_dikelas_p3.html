@@ -1,0 +1,23 @@
+<html>
+<head>
+  <title>JSON Example</title>
+</head>
+<body>
+  <button onclick="getData()">Load Data</button>
+  <h1>Data from JSON</h1>
+  <div id="data-container"></div>
+
+  <script>
+    function getData() {
+      fetch('data.json')
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          const container = document.getElementById('data-container');
+          container.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        })
+        .catch(error => console.error('Error fetching JSON:', error));
+    }
+  </script>
+</body>
+</html>
