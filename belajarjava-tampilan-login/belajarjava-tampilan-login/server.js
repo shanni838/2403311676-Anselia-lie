@@ -1,36 +1,54 @@
-const express  = require('express');
+const express = require('express');
 const path = require('path');
+const { promisePool, testConnection } = require('./config/database');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-const DEMO_USER = {
-    username: 'admin@gmail.com',
-    password: 'password123'
-};
-
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async(req, res) => {
     const { username, password } = req.body || {};
 
     if (!username || !password) {
         return res.status(400).json({ message: 'Username dan password diperlukan' });
     }
-    
-    if (username === DEMO_USER.username && password === DEMO_USER.password) {
-        return res.status(200).json({ message: 'Login berhasil' });
+
+    try {
+        // Query user dari database
+        const [rows] = await promisePool.execute(
+            'SELECT * FROM user WHERE username = ? AND password = ?', [username, password]
+        );
+
+        if (rows.length > 0) {
+            const user = rows[0];
+            return res.status(200).json({
+                success: true,
+                message: `Login berhasil! Selamat datang, ${user.username}`
+            });
+        } else {
+            return res.status(200).json({
+                success: false,
+                message: 'Login gagal. Email atau password salah.'
+            });
+        }
+    } catch (error) {
+        console.error('Database error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Terjadi kesalahan server. Silakan coba lagi.'
+        });
     }
 
-    return res.status(401).json({ message: 'Username atau password salah' });
 });
 
-app.get('*', (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async() => {
+    await testConnection();
     console.log(`Server berjalan di http://localhost:${PORT}`);
 });

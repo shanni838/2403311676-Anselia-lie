@@ -4,11 +4,11 @@ const messageBox = document.getElementById("message");
 function setMessage(text, type = 'info') {
     messageBox.textContent = text;
     messageBox.className = type;
-    messageBox.classList.add('message',type);
+    messageBox.classList.add('message', type);
 }
 
-form.addEventListener("submit", async (event) => {
-    event.preventDefault(); 
+form.addEventListener("submit", async(event) => {
+    event.preventDefault();
 
     setMessage("Memproses...", 'info');
 
@@ -25,7 +25,13 @@ form.addEventListener("submit", async (event) => {
         });
 
         const result = await response.json();
-        setMessage(result.message, response.ok ? 'success' : 'error');
+        if (data.success) {
+            setMessage(data.messageBox || 'login berhasil.', 'success')
+
+            setTimeout(() => { window.location.href = data.redirect || '/dashboard' }, 1000)
+        } else {
+            setMessage(data.messageBox || "login gagal", error)
+        }
     } catch (error) {
         setMessage("Terjadi kesalahan. Silakan coba lagi.", 'error');
     }
