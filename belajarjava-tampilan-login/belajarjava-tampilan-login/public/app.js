@@ -24,14 +24,13 @@ form.addEventListener("submit", async(event) => {
             body: JSON.stringify(data)
         });
 
-        const result = await response.json();
-        if (data.success) {
-            setMessage(data.messageBox || 'login berhasil.', 'success')
+        setTimeout(() => {
+            window.location.href = data.redirect || '/dasboard/page.html'
+        }, 1000)
 
-            setTimeout(() => { window.location.href = data.redirect || '/dashboard' }, 1000)
-        } else {
-            setMessage(data.messageBox || "login gagal", error)
-        }
+        const result = await response.json();
+        setMessage(result.messageBox, response.ok ? 'success' : 'error')
+
     } catch (error) {
         setMessage("Terjadi kesalahan. Silakan coba lagi.", 'error');
     }
